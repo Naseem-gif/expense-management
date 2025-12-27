@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useState } from "react";
 
 const App = () => {
   const [name, setName] = useState("");
@@ -6,6 +6,8 @@ const App = () => {
   const [date, setDate] = useState("");
   const [category, setCategory] = useState("");
   const [expense, setExpense] = useState([]);
+  const [filterDate, setFilterDate] = useState("");
+  const [filterCategory, setFilterCategory] = useState("");
 
   const addExpense = (e) => {
     e.preventDefault();
@@ -42,6 +44,15 @@ const App = () => {
 
   const totalExpense = expense.reduce((sum, e) => sum + e.amount, 0);
 
+  const filteredExpenses = expense.filter((exp) => {
+    const matchDate = filterDate ? exp.date === filterDate : true;
+    const matchCategory = filterCategory
+      ? exp.category === filterCategory
+      : true;
+
+    return matchDate && matchCategory;
+  });
+
   return (
     <>
       <div>
@@ -77,12 +88,26 @@ const App = () => {
             <button type="submit">Add Expense</button>
           </form>
         </section>
+        <div>
+          <input
+            type="date"
+            value={filterDate}
+            onChange={(e) => setFilterDate(e.target.value)}
+          />
+
+          <input
+            type="text"
+            placeholder="Filter by category"
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+          />
+        </div>
         <section>
           <h2>Expense List</h2>
           {expense.length === 0 ? (
             <h3>No expense found</h3>
           ) : (
-            expense.map((exp) => (
+            filteredExpenses.map((exp) => (
               <ul key={exp.id}>
                 <li>{exp.name}</li>
                 <li>{exp.amount}</li>
