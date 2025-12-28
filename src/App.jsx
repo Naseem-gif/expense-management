@@ -1,4 +1,4 @@
-import { use, useState } from "react";
+import { useState } from "react";
 
 const App = () => {
   const [name, setName] = useState("");
@@ -8,6 +8,7 @@ const App = () => {
   const [expense, setExpense] = useState([]);
   const [filterDate, setFilterDate] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
+  const [sortType, setSortType] = useState("");
 
   const addExpense = (e) => {
     e.preventDefault();
@@ -53,6 +54,18 @@ const App = () => {
     return matchDate && matchCategory;
   });
 
+  const sortedExpenses = [...filteredExpenses].sort((a, b) => {
+    if (sortType === "amount") {
+      return a.amount - b.amount;
+    }
+
+    if (sortType === "date") {
+      return new Date(a.date) - new Date(b.date);
+    }
+
+    return 0;
+  });
+
   return (
     <>
       <div>
@@ -89,6 +102,7 @@ const App = () => {
           </form>
         </section>
         <div>
+          <h2>Filter Data</h2>
           <input
             type="date"
             value={filterDate}
@@ -102,12 +116,24 @@ const App = () => {
             onChange={(e) => setFilterCategory(e.target.value)}
           />
         </div>
+
+        <div className="sort-div">
+          <select
+            name=""
+            value={sortType}
+            onChange={(e) => setSortType(e.target.value)}
+          >
+            <option value="" disabled>Sort By</option>
+            <option value="amount">Amount</option>
+            <option value="date">Date</option>
+          </select>
+        </div>
         <section>
           <h2>Expense List</h2>
           {expense.length === 0 ? (
             <h3>No expense found</h3>
           ) : (
-            filteredExpenses.map((exp) => (
+            sortedExpenses.map((exp) => (
               <ul key={exp.id}>
                 <li>{exp.name}</li>
                 <li>{exp.amount}</li>
