@@ -1,14 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const App = () => {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
   const [category, setCategory] = useState("");
-  const [expense, setExpense] = useState([]);
+  const [expense, setExpense] = useState(() => {
+    const saved = localStorage.getItem("expenses");
+    return saved ? JSON.parse(saved) : []
+  });
   const [filterDate, setFilterDate] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
   const [sortType, setSortType] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("expenses", JSON.stringify(expense));
+  }, [expense]);
+
+
+  const clearAllExpenses = () => {
+    const confirmClearAll = window.confirm("Are you sure you want to clear everything?")
+    if(confirmClearAll){
+      setExpense([])
+      localStorage.removeItem('expneses')
+    }
+  }
 
   const addExpense = (e) => {
     e.preventDefault();
@@ -147,6 +163,10 @@ const App = () => {
         <section>
           <h2>Total Expense</h2>
           <h4>Rs {totalExpense}</h4>
+
+          <div>
+            <button onClick={clearAllExpenses}>Clear All</button>
+          </div>
         </section>
       </div>
     </>
